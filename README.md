@@ -38,7 +38,7 @@ Webpages are saved in `attachments/webpages`. You can specify the port with `-p`
 
 ## Docker
 
-Docker image is available at [Docker Hub](https://hub.docker.com/repository/docker/freetonik/textpod).
+Docker image is available at [Docker Hub](https://hub.docker.com/r/freetonik/textpod).
 E.g. run on port `8099`, mapping the `notes` directory (under current directory):
 
 ```
