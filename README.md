@@ -38,19 +38,15 @@ Webpages are saved in `attachments/webpages`. You can specify the port with `-p`
 
 ## Docker
 
-Here's how to build a Docker image and run it on port `8099`, mapping the `notes` directory (under current directory).
+Docker image is available at [Docker Hub](https://hub.docker.com/repository/docker/freetonik/textpod).
+E.g. run on port `8099`, mapping the `notes` directory (under current directory):
 
-```console
-cd docker
-docker build -t textpod-docker .
-docker run --rm --name textpod -d -v $(pwd)/notes:/app -p 8099:80 textpod-docker
+```
+docker pull freetonik/textpod
+docker run --rm --name textpod -d -v $(pwd)/notes:/app -p 8099:3000 freetonik/textpod
 ```
 
-Or with Compose:
-
-```console
-docker compose up -d --build
-```
+Or check out `docker-compose.yml`.
 
 ## Contributing
 
