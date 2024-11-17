@@ -3,7 +3,7 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::Html,
-    routing::{get, post, delete},
+    routing::{delete, get, post},
     Json, Router,
 };
 use base64::{display::Base64Display, engine::general_purpose::STANDARD};
