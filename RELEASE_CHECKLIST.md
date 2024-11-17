@@ -1,3 +1,4 @@
+- [ ] Update version in `Cargo.toml`
 - [ ] Create Github release
 - [ ] Update homebrew formula https://github.com/freetonik/homebrew-tap
 - [ ] Update cargo package `cargo publish --dry-run` https://crates.io/crates/textpod
