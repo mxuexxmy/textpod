@@ -3,7 +3,7 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::Html,
-    routing::{get, post},
+    routing::{get, post, delete},
     Json, Router,
 };
 use base64::{display::Base64Display, engine::general_purpose::STANDARD};
@@ -76,6 +76,7 @@ async fn main() {
         .route("/save", post(save_note))
         .route("/search/:query", get(search_notes))
         .route("/upload", post(upload_file))
+        .route("/delete/:timestamp", delete(delete_note))
         .layer(DefaultBodyLimit::max(CONTENT_LENGTH_LIMIT))
         .nest_service("/attachments", ServeDir::new("attachments"))
         .with_state(state);
@@ -136,8 +137,8 @@ async fn index(State(state): State<AppState>) -> Html<String> {
         .rev()
         .map(|note| {
             format!(
-                "<div class=\"note\">{}<time datetime=\"{}\">{}</time></div>",
-                note.html, note.timestamp, note.timestamp
+                "<div class=\"note\">{}<div class=\"noteMetadata\"><time datetime=\"{}\">{}</time> [<a href=\"#\" data-timestamp=\"{}\" onclick=\"deleteNote(event, this)\">delete</a>]</div></div>",
+                note.html, note.timestamp, note.timestamp, note.timestamp
             )
         })
         .collect::<Vec<_>>()
@@ -187,7 +188,7 @@ async fn save_note(
         .open("notes.md")
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    writeln!(file, "{}\n{}\n\n---\n", timestamp, content)
+    write!(file, "{}\n{}\n\n---\n\n", timestamp, content)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     info!("Note created: {}", timestamp);
@@ -248,6 +249,33 @@ async fn save_note(
     }
 
     Ok(())
+}
+
+// route DELETE /delete/{timestamp}
+async fn delete_note(
+    State(state): State<AppState>,
+    Path(timestamp): Path<String>,
+) -> Result<(), StatusCode> {
+    let mut notes = state.notes.lock().unwrap();
+
+    // Find and remove the note with matching timestamp
+    if let Some(index) = notes.iter().position(|note| note.timestamp == timestamp) {
+        notes.remove(index);
+
+        // Update the notes.md file
+        let content = notes
+            .iter()
+            .map(|note| format!("{}\n{}\n\n---\n\n", note.timestamp, note.content))
+            .collect::<String>();
+
+        fs::write("notes.md", content).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+        info!("Note deleted: {}", timestamp);
+        Ok(())
+    } else {
+        error!("Note not found: {}", timestamp);
+        Err(StatusCode::NOT_FOUND)
+    }
 }
 
 // route GET /search/{query}

@@ -69,6 +69,21 @@
             padding-top: 0.25em;
         }
 
+        .note .noteMetadata {
+            font-size: 0.9em;
+            font-family: monospace;
+            color: var(--color-secondary);
+        }
+
+        .note .noteMetadata a {
+            color: var(--color-secondary);
+            text-decoration: none;
+        }
+
+        .note .noteMetadata a:hover {
+            text-decoration: underline;
+        }
+
         .note code {
             padding: 0.25em;
             background-color: var(--color-bg-secondary);
@@ -93,12 +108,6 @@
             max-width: 100%;
         }
 
-        time {
-            font-size: 0.9em;
-            margin-bottom: 0.25em;
-            font-family: monospace;
-            color: var(--color-secondary);
-        }
     </style>
 </head>
 
@@ -158,6 +167,24 @@
                     notesDiv.innerHTML = newNotes;
                     originalNotes = newNotes;
                 }
+            }
+        }
+
+        async function deleteNote(event, element) {
+            event.preventDefault();
+            if (!confirm('Are you sure you want to delete this note?')) {
+                return;
+            }
+
+            const timestamp = element.getAttribute('data-timestamp');
+            const response = await fetch(`/delete/${timestamp}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                element.closest('.note').remove();
+            } else {
+                alert('Failed to delete note');
             }
         }
 
