@@ -1,6 +1,6 @@
 services:
     textpod-docker:
-        image: freetonik/textpod:latest
+        image: xxmymxue/textpod:0.0.2
         build: .
         ports:
             - '8099:3000'

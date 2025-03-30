@@ -12,8 +12,7 @@ RUN apk add --no-cache tzdata
 
 WORKDIR /app/notes
 
-HEALTHCHECK --interval=60s --retries=3 --timeout=1s \
-CMD nc -z -w 1 localhost 3000 || exit 1
+EXPOSE 3000/tcp
 
 ENTRYPOINT ["textpod"]
 CMD ["-p", "3000", "-l", "0.0.0.0"]
